@@ -1,0 +1,9 @@
+COURSE SEARCH PRPODUCTION URL  :https://supo.app.n8n.cloud/webhook/course-search
+
+APOOINMENT BOKKING WORKFLOW    :https://supo.app.n8n.cloud/webhook/appointment-booking
+
+SAVE LEAD WORKFLOW             :https://supo.app.n8n.cloud/webhook/save-lead
+
+HUMAN ESCALATION WORKFLOW      :https://supo.app.n8n.cloud/webhook/human-escalation
+
+CONVERSATION LOGGING           :https://supo.app.n8n.cloud/webhook/ostad-conversation-logging
