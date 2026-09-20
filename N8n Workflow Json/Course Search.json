@@ -1,0 +1,186 @@
+{
+  "name": "Course Search",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "course-search",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "787b454a-06a0-4200-98cb-be9224ea11f0",
+      "name": "Course Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        96
+      ],
+      "webhookId": "259e3665-6cca-403e-9daa-6bba3e9c9602"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Gqc_7Skj6YuR5Rm4f90MGFzfqEqceuApqtSXc00Kk-A",
+          "cachedResultName": "Ostad ai receptionist database"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1748320106",
+          "cachedResultName": "COURSES"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "COURSES",
+              "lookupValue": "={{ $json.body.course }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6b5755a2-35a2-4cf3-9b1a-56d69b92351b",
+      "name": "Search Courses Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        96
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wdSxOP7IgxlSPD7K",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "course-exists",
+              "leftValue": "={{ $json.COURSES }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ef818177-1ce6-432c-b64f-bea0eeaea0de",
+      "name": "Course Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"course\": $json.COURSES, \"duration\": $json.DURATION, \"fee\": $json.FEES } }}",
+        "options": {}
+      },
+      "id": "ccaf1bdd-5ce8-411d-82b2-eae464c78d1c",
+      "name": "Respond Course Found",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"message\": \"Course not found.\"\n}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "id": "b9a0e339-f8d9-486b-a6fb-a4c235de1015",
+      "name": "Respond Not Found",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Course Webhook": {
+      "main": [
+        [
+          {
+            "node": "Search Courses Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Courses Sheet": {
+      "main": [
+        [
+          {
+            "node": "Course Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Course Found?": {
+      "main": [
+        [
+          {
+            "node": "Respond Course Found",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Not Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "c093be06-cb1a-4dd3-a283-b7ed7cb49ed2",
+  "meta": {
+    "instanceId": "2a121e9f52c50082b67e8e0de2ae525e9745352ee307e77a22992fe2008aabe0"
+  },
+  "nodeGroups": [],
+  "id": "EQa8HEcaXncYRtlT",
+  "tags": []
+}

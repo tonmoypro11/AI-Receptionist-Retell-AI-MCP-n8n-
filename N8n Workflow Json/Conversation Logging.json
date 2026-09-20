@@ -1,0 +1,359 @@
+{
+  "name": "Conversation Logging",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Conversation Logging — Ostad AI Receptionist\nStores every AI Receptionist phone conversation into the \"Ostad AI Receptionist Database\" Google Sheet (CALL LOGS tab).\n\n**Flow:** Webhook (POST) → Validate fields → Append row → Respond JSON.\n\n**Expected JSON body:** transcript, summary, intent, sentiment, duration, timestamp.",
+        "height": 260,
+        "width": 420,
+        "color": 4
+      },
+      "id": "70a04df0-77b5-4792-ad07-629522dbe22f",
+      "name": "Sticky Note 70a04df0",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Webhook Trigger (POST)\nReceives conversation data from the AI Receptionist.\n\n**Future:** ready for Retell AI integration via MCP — point the Retell post-call webhook / MCP tool at this endpoint.",
+        "height": 220,
+        "width": 320,
+        "color": 5
+      },
+      "id": "ee31ad5d-3c26-4e3e-8a29-1163f62a4aa9",
+      "name": "Sticky Note ee31ad5d",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. Validate Required Fields\nEnsures transcript, summary, intent, sentiment, duration, and timestamp are all present before saving.\n\nMissing any field → Error response.",
+        "height": 220,
+        "width": 320,
+        "color": 3
+      },
+      "id": "e37ddc22-6724-4dcb-9cdd-5a055c92980c",
+      "name": "Sticky Note e37ddc22",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. Save to Call Logs\nAppends a new row to the CALL LOGS sheet, mapping each field 1:1.\n\n### 4. Respond\nReturns a JSON success or error response.",
+        "height": 220,
+        "width": 320,
+        "color": 6
+      },
+      "id": "792b30f1-0f0e-4d1a-8281-26ff70cc4e48",
+      "name": "Sticky Note 792b30f1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ostad-conversation-logging",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "6b053b91-0252-4c0f-b02d-1a35f4f822c9",
+      "name": "Receive Conversation Data",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        96
+      ],
+      "webhookId": "640ba535-dbbd-4e86-8861-071bba3665aa"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "transcript",
+              "leftValue": "={{ $json.body.transcript }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "summary",
+              "leftValue": "={{ $json.body.summary }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "intent",
+              "leftValue": "={{ $json.body.intent }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "sentiment",
+              "leftValue": "={{ $json.body.sentiment }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "duration",
+              "leftValue": "={{ $json.body.duration }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "timestamp",
+              "leftValue": "={{ $json.body.timestamp }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "632db39c-88b0-4b12-82e5-b5e0f0b122a8",
+      "name": "Validate Required Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Gqc_7Skj6YuR5Rm4f90MGFzfqEqceuApqtSXc00Kk-A",
+          "cachedResultName": "Ostad ai receptionist database"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1914366404",
+          "cachedResultName": "CALL LOGS"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "transcript": "={{ $json.body.transcript }}",
+            "summary": "={{ $json.body.summary }}",
+            "intent": "={{ $json.body.intent }}",
+            "sentiment": "={{ $json.body.sentiment }}",
+            "duration": "={{ $json.body.duration }}",
+            "timestamp": "={{ $json.body.timestamp }}"
+          },
+          "schema": [
+            {
+              "id": "transcript",
+              "displayName": "transcript",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "intent",
+              "displayName": "intent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "duration",
+              "displayName": "duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "561c16a6-f33e-44a8-8956-605ee4a52be9",
+      "name": "Save to Call Logs",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wdSxOP7IgxlSPD7K",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Conversation logged successfully.\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "cbf2e1dd-b7ec-4736-a79d-6d52dc75dfcd",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"message\": \"Failed to log the conversation.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "5b345f4d-213b-415e-bb49-949f35dda23c",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive Conversation Data": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Save to Call Logs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Call Logs": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "6d0bc702-653f-4720-af6e-bf8431e0b468",
+  "meta": {
+    "instanceId": "2a121e9f52c50082b67e8e0de2ae525e9745352ee307e77a22992fe2008aabe0"
+  },
+  "nodeGroups": [],
+  "id": "AgwhnaTaIPWQUQDM",
+  "tags": []
+}

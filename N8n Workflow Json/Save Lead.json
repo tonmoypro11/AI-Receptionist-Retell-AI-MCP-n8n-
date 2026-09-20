@@ -1,0 +1,312 @@
+{
+  "name": "Save Lead",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "save-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "91d5bf6d-0464-4d1d-9af9-ddf33c2fa715",
+      "name": "Receive Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        32
+      ],
+      "webhookId": "db791b67-1279-49ea-9ad1-984553e29c21"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "has-name",
+              "leftValue": "={{ $json.body.name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "has-phone",
+              "leftValue": "={{ $json.body.phone }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "has-course",
+              "leftValue": "={{ $json.body.interested_course }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "01de3991-5a13-49f5-bc1e-e467485252a4",
+      "name": "Validate Required Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Gqc_7Skj6YuR5Rm4f90MGFzfqEqceuApqtSXc00Kk-A",
+          "cachedResultName": "Ostad AI Receptionist Database"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1477725633",
+          "cachedResultName": "LEADS"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.body.name }}",
+            "phone": "={{ $json.body.phone }}",
+            "email": "={{ $json.body.email }}",
+            "interested_course": "={{ $json.body.interested_course }}",
+            "timestamp": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "interested_course",
+              "displayName": "interested_course",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0707edd9-d061-4fbf-ab3c-087262285419",
+      "name": "Save Lead to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        -128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wdSxOP7IgxlSPD7K",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Lead information has been saved successfully.\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "51da5ba5-1880-4c0d-9ce5-45bfcb153685",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"message\": \"Missing required lead information.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "b3b98a92-82b6-44b2-a097-e0a98d42a232",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        512,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 1. Receive Lead\nWebhook (POST) endpoint for the Ostad Academy AI Receptionist.\n\nExpected JSON body:\n- name (required)\n- phone (required)\n- email (optional)\n- interested_course (required)\n\nResponds via the Respond to Webhook nodes. Ready for MCP integration with Retell AI.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "a96a4b01-4d7d-4630-8730-27b9d16e2d59",
+      "name": "Sticky Note a96a4b01",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 2. Validate\nEnsures name, phone, and interested_course are provided. Invalid requests are routed to the error response.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "4a91284e-d3ec-4181-b89f-d73950b729a5",
+      "name": "Sticky Note 4a91284e",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 3. Save Lead\nAppends a new row to the LEADS sheet in the \"Ostad AI Receptionist Database\" spreadsheet, mapping name, phone, email, interested_course and a current timestamp.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "c85a6c30-e2cb-4e3c-8cfe-ae2f25b40451",
+      "name": "Sticky Note c85a6c30",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 4. Respond\nReturns a JSON success or error response to the caller.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "bc3ff735-7da8-4196-9915-3062ef477663",
+      "name": "Sticky Note bc3ff735",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Save Lead to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Lead to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "e6e1e241-f4cf-4560-be51-c20ac5200924",
+  "meta": {
+    "instanceId": "2a121e9f52c50082b67e8e0de2ae525e9745352ee307e77a22992fe2008aabe0"
+  },
+  "nodeGroups": [],
+  "id": "aRHUDwT7hLztV8mA",
+  "tags": []
+}

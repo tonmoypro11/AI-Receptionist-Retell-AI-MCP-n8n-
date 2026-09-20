@@ -1,0 +1,334 @@
+{
+  "name": "Human Escalation",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 1. Receive Request\nWebhook (POST) entry point for the Ostad AI Receptionist. Expects JSON body: name, phone, issue, and optional timestamp. Ready for future MCP integration with Retell AI.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "a7b5e829-1428-4405-8f6f-bc6d016b5531",
+      "name": "Sticky Note a7b5e829",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 2. Validate Input\nEnsures name, phone, and issue are all provided. Missing fields are routed to the error response.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "49b33bdd-8133-49c3-bac5-a579ad2e7751",
+      "name": "Sticky Note 49b33bdd",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 3. Persist & Notify\nAppends the request to the \"SUPPORT RESQUEST\" sheet in the Ostad AI Receptionist Database, then emails the support team.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "9431cdc5-6020-4866-8a83-625970c66569",
+      "name": "Sticky Note 9431cdc5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 4. Respond\nReturns a JSON success or error response to the caller via Respond to Webhook.",
+        "height": 200,
+        "width": 300
+      },
+      "id": "a94087bd-84a8-438a-92bb-7b70d2293b42",
+      "name": "Sticky Note a94087bd",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "human-escalation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "81a56faa-21cd-431a-b805-7ee504017e40",
+      "name": "Receive Support Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        96
+      ],
+      "webhookId": "536b671e-aab0-42e1-bdb1-70a6e6c12709"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "name-present",
+              "leftValue": "={{ $json.body.name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "phone-present",
+              "leftValue": "={{ $json.body.phone }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "issue-present",
+              "leftValue": "={{ $json.body.issue }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3903be07-cd8b-476a-afc1-8185cdf37172",
+      "name": "Validate Required Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Gqc_7Skj6YuR5Rm4f90MGFzfqEqceuApqtSXc00Kk-A",
+          "cachedResultName": "Ostad ai receptionist database"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "506983630",
+          "cachedResultName": "SUPPORT RESQUEST"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.body.name }}",
+            "phone": "={{ $json.body.phone }}",
+            "issue": "={{ $json.body.issue }}",
+            "timestamp": "={{ $json.body.timestamp || $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "issue",
+              "displayName": "issue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "134d04af-4cd2-4e5c-a461-a6a4cb786f72",
+      "name": "Save to Support Requests Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wdSxOP7IgxlSPD7K",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "tonmoypro11@gmail.com",
+        "subject": "New Human Support Request",
+        "message": "=<h2>New Human Support Request</h2>\n<p><strong>Name:</strong> {{ $json.body.name }}</p>\n<p><strong>Phone:</strong> {{ $json.body.phone }}</p>\n<p><strong>Issue:</strong> {{ $json.body.issue }}</p>\n<p><strong>Timestamp:</strong> {{ $json.body.timestamp || $now.toISO() }}</p>",
+        "options": {}
+      },
+      "id": "b05cd72d-5796-425f-8dd0-8f8670211311",
+      "name": "Notify Support Team",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "webhookId": "a94b3a88-efb3-43fc-8757-a35887d015b8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "yRsEnBDbsYSrH4zw",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"success\":true,\"message\":\"Your request has been forwarded to our human support team. They will contact you soon.\"}",
+        "options": {}
+      },
+      "id": "d48451f1-f9af-4bf9-bee7-ebb8fc6f87e0",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"success\":false,\"message\":\"Missing required support request information.\"}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "163670c4-9e94-48ed-82e5-bf3c00296239",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive Support Request": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Save to Support Requests Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Support Requests Sheet": {
+      "main": [
+        [
+          {
+            "node": "Notify Support Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Support Team": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "3717a360-05b9-42da-9849-5ae60c5ff2eb",
+  "meta": {
+    "instanceId": "2a121e9f52c50082b67e8e0de2ae525e9745352ee307e77a22992fe2008aabe0"
+  },
+  "nodeGroups": [],
+  "id": "kaZeioGpRPI9wxiJ",
+  "tags": []
+}

@@ -1,0 +1,335 @@
+{
+  "name": "Appointment Booking",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment-booking",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f25a53a4-4172-4d8c-9816-1548133e69a2",
+      "name": "Booking Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        96
+      ],
+      "webhookId": "7a9df813-d178-4711-a161-9069beb82fc4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "name",
+              "leftValue": "={{ $json.body.name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "phone",
+              "leftValue": "={{ $json.body.phone }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "preferred_date",
+              "leftValue": "={{ $json.body.preferred_date }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "preferred_time",
+              "leftValue": "={{ $json.body.preferred_time }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "97bf4005-8d51-4fa5-8ab9-09eac7ebe881",
+      "name": "Validate Required Fields",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Gqc_7Skj6YuR5Rm4f90MGFzfqEqceuApqtSXc00Kk-A",
+          "cachedResultName": "Ostad ai receptionist database"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "452600211",
+          "cachedResultName": "APPOINMENTS"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.body.name }}",
+            "Phone": "={{ $json.body.phone }}",
+            "Date": "={{ $json.body.preferred_date }}",
+            "Time": "={{ $json.body.preferred_time }}",
+            "Status": "Booked",
+            "Timestamp": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a787a828-34ac-4e2f-b668-519779c3b331",
+      "name": "Save Booking to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wdSxOP7IgxlSPD7K",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"success\":true,\"message\":\"Your consultation appointment has been booked successfully.\",\"status\":\"Booked\"}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "8e294c7b-2dee-474b-919d-067cdee4ab69",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"success\":false,\"message\":\"Missing required booking information.\"}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "21afef3a-a801-46f8-ac9c-505663a5cd9a",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 1. Receive Booking Request\nWebhook (POST) accepts a JSON body with name, phone, preferred_date and preferred_time. Responds via the Respond to Webhook nodes.",
+        "height": 104,
+        "width": 300
+      },
+      "id": "53d74117-edf8-422a-a00b-3c0f94abaaf2",
+      "name": "Sticky Note 53d74117",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 2. Validate Input\nChecks that all four required fields are present. Missing fields route to the error response.",
+        "height": 120,
+        "width": 300
+      },
+      "id": "23447082-b412-41ec-b7b5-35da24cfbc54",
+      "name": "Sticky Note 23447082",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 3. Save & Confirm\nAppends the booking to the APPOINMENTS sheet in \"Ostad AI Receptionist Database\" with Status = Booked and a timestamp, then returns the success response.",
+        "height": 120,
+        "width": 300
+      },
+      "id": "97bd78d5-08d3-4527-a0d3-35c5c36b8008",
+      "name": "Sticky Note 97bd78d5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Error Path\nReturns a 400 response when required booking information is missing.",
+        "height": 136,
+        "width": 300
+      },
+      "id": "c32214c2-39cb-481b-8656-281bce37d463",
+      "name": "Sticky Note c32214c2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Booking Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Save Booking to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Booking to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "a054f68c-96f0-40c6-b312-03c171acf327",
+  "meta": {
+    "instanceId": "2a121e9f52c50082b67e8e0de2ae525e9745352ee307e77a22992fe2008aabe0"
+  },
+  "nodeGroups": [],
+  "id": "VMOrUcw6EJna2YpB",
+  "tags": []
+}
